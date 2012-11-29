@@ -8,6 +8,7 @@ class ConfigurationDroits extends BaseConfigurationDroits {
 	
 	const CODE_CVO = 'CVO';
 	const LIBELLE_CVO = 'Cvo';
+	const PART_ACHETEUR = 0.5;
 	
 	public function addDroit($date, $taux, $code, $libelle) {
 	  $value = $this->add();
@@ -17,11 +18,11 @@ class ConfigurationDroits extends BaseConfigurationDroits {
 	  $value->libelle = $libelle;
 	}
 	
-	public function getCurrentDroit($campagne) {
+	public function getCurrentDroit($periode) {
 		$currentDroit = null;
 		foreach ($this as $configurationDroit) {
 			$date = new DateTime($configurationDroit->date);
-			if ($campagne >= $date->format('Y-m')) {
+			if ($periode >= $date->format('Y-m')) {
 				if ($currentDroit) {
 					if ($date->format('Y-m-d') > $currentDroit->date) {
 						$currentDroit = $configurationDroit;
@@ -34,12 +35,7 @@ class ConfigurationDroits extends BaseConfigurationDroits {
 		if ($currentDroit) {
 			return $currentDroit;
 		} else {
-			try {
-			  $parent = $this->getInterpro()->getParent()->getParent()->getParentNode();
-			  return $parent->interpro->getOrAdd($this->getInterpro()->getKey())->droits->getOrAdd($this->getKey())->getCurrentDroit($campagne);
-			} catch (sfException $e) {
-			  throw new sfException('Aucun droit spécifié');
-			}
+			return null;
 		}
 	}
 	
